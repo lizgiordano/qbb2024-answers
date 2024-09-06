@@ -7,20 +7,27 @@ I would like to learn more about miRNAs
 
 # answer 2
 cut -f 1 hg38-gene-metadata-go.tsv | uniq -c | sort -n
+
 273 ENSG00000168036 has the most go_ids
+# code for creating new file sorted by 3rd column
+
 
 # Exercise 2 
 # answer 1
-grep "IG_._gene" genes.gtf isolates IG genes row
-grep "IG_._gene" genes.gtf | cut -f 1 | uniq -c   pipe to cut the 1st column (chrm) to see number of pseudogenes on each chromosome
+# isolate IG genes row
+grep "IG_._gene" genes.gtf 
+# pipe to cut the 1st column (chrm) 
+grep "IG_._gene" genes.gtf | cut -f 1 | uniq -c   
+# number of pseudogenes on each chromosome:
 52 chr2
   91 chr14
   16 chr15
    6 chr16
    1 chr21
   48 chr22
-to compare to IG pseudogenes
-grep -e "IG_._pseudogene" -e "IG_pseudogene" genes.gtf | cut -f 1 | uniq -c | sort      
+# IG pseudogenes per chromosome code:
+grep -e "IG_._pseudogene" -e "IG_pseudogene" genes.gtf | cut -f 1 | uniq -c | sort   
+# results for IG pseudogene per chromosome   
    1 chr1
    1 chr10
    1 chr18
