@@ -48,9 +48,8 @@ ggplot(data=dnm_by_parental_age,
 
 # step 2.3
 # test for an association between paternal age and paternally inherited de novo mutations.
-lm(data=dnm_by_parental_age,
-   formula = n_paternal_dnm ~ 1 + Father_age) %>%
-  summary()
+paternal_model <- lm(data=dnm_by_parental_age, formula = n_paternal_dnm ~ 1 + Father_age)
+summary(paternal_model)
 ggplot(data=dnm_by_parental_age,
        mapping=aes(x=Father_age, 
                    y=n_paternal_dnm))+
@@ -59,6 +58,20 @@ ggplot(data=dnm_by_parental_age,
 # 1 As paternal age increases, the chance of paternal de novo mutations also increases
 # 2 the relationship is significant because the p-value is so small. So this means that the observed relationship is not due to chance.
 
-Step 2.4
+# Step 2.4
 
 
+
+
+# Step 2.5
+ggplot(data=dnm_by_parental_age) + 
+  geom_histogram(mapping = aes(x = n_paternal_dnm, alpha = 0.5)) +
+  geom_histogram(mapping = aes(x = n_maternal_dnm, alpha = 0.5)) +
+  ylab("Frequency")+
+  xlab("Number of de Novo Mutations")
+
+
+# Step 2.6
+t.test(dnm_by_parental_age$n_paternal_dnm, dnm_by_parental_age$n_maternal_dnm, paired = TRUE)
+# chose a paired t-test because I am trying to find the significant difference between two measurements. In this case, the difference between maternal and paternal mutations.
+# My test was statistically significant. This means that there is a difference between maternal and faternal mutation rates.
