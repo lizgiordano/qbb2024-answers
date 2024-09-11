@@ -7,6 +7,9 @@ my_file = open( sys.argv[1] )
 for my_line in my_file:
     if "##" in my_line:
             continue
+    line = line.rstrip("\.")
+    line = line.rstrip("\n")
+    line = line.lstrip"\."
     fields = my_line.split("\t")
     print(fields[0], fields[3], fields[4], fields[8])
 
