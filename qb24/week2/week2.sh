@@ -34,6 +34,25 @@ bedtools subtract -a tempfile -b merged_chr1_cCREs.bed > other_chr1.bed #now sub
 # use bedtools coverage to find how many SNPs fall within each set of features.
 
 echo -e "MAF\tFeature\tEnrichment" > snp_counts.txt
-MAF=("chr1_snps_0.1" "chr1_snps_0.2" "chr1_snps_0.3" "chr1_snps_0.4" "chr1_snps_0.5")
-features=("chr1_exons.bed" "chr1_cCREs.bed" "introns_chr1.bed")
-genome=("genome_chm1.bed")
+SNP=("chr1_snps_0.1" "chr1_snps_0.2" "chr1_snps_0.3" "chr1_snps_0.4" "chr1_snps_0.5")
+features=("chr1_exons.bed" "chr1_cCREs.bed" "introns_chr1.bed" "other_chr1.bed")
+genome=("genome_chr1.bed")
+
+for SNP in "${SNP[@]}"
+    do
+        bedtools coverage -a $genome -b $SNP > SNPcoverage.txt # SNP coverage
+        coverage_sum=$(awk '{s+=$4}END{print s}' SNPcoverage.txt)
+        sum_total_bases=$(awk '{s+=$6}END{print s}' SNPcoverage.txt)
+        # find number of SNPs for MAF per chromosome length
+        background=$(echo "$coverage_sum / $sum_total_bases" | bc -l)
+        #add second for loop 
+        for feature in "${feature[@]}"
+            do  
+                bedtools coverage -a $feature -b $SNP > SNPfeatures.txt
+
+            done    
+
+
+    done        
+    
+    # wasn't able to finish, will continue later, ran into too many tech issues with computer
