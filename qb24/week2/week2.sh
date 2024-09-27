@@ -45,16 +45,19 @@ for MAF in "${MAF[@]}"
     do
         SNP=chr1_snps${MAF} #select the snp file
         bedtools coverage -a $genome -b $SNP > SNPcoverage.txt # remove SNP from whole genome
-        coverage_sum=$(awk '{s+=$4}END{print s}' SNPcoverage.txt) 
-        sum_total_bases=$(awk '{s+=$6}END{print s}' SNPcoverage.txt)
+        coverage_sum=$(awk '{s+=$4}END{print s}' SNPcoverage.txt) # take the SNPs
+        bases_sum=$(awk '{s+=$6}END{print s}' SNPcoverage.txt) # take the bases
         # find number of SNPs for MAF per chromosome length
-        background=$(echo "$coverage_sum / $sum_total_bases" | bc -l)
+        background=$(echo "$coverage_sum / $bases_sum" | bc -l) # bc gives background density of SNPs, -l gives decimal
         #add second for loop 
-        for feature in "${feature[@]}"
+        for feature in "${feature[@]}" # goes through the feature files
             do  
-                bedtools coverage -a $feature -b $SNP > SNPfeatures.txt
-                featureSNP=$(awk '{s+=$4}END{print s}' SNPcoverage.txt)
-
+                bedtools coverage -a $feature -b $SNP > feature_coverage.txt # goes through coverage of SNPs on the features
+                feature_snps=$(awk '{s+=$4}END{print s}' feature_coverage.txt) # total the SNPs in the feature
+                feature_bases=$(awk '{s+=$6} END {print s}' feature_coverage.txt) # total the bases in the feature
+                feature_density=$(echo "$feature_snps / $feature_bases" | bc -l) # find SNP density in the feature
+                enrichment=$(echo "$feature_density / $background" | bc -l) # find the enrichment of density to bakcground
+                echo -e "${MAF}\t${ffeatures}\t${enrichment}" >> snp_counts.txt # calculates the results and saves to new file
             done    
 
 
