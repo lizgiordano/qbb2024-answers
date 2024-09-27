@@ -2,10 +2,11 @@ library(tidyverse)
 library(ggplot2)
 
 # add in data
-snp_data <- read.delim("~/qbb2024-answers/qb24/week2/snp_counts.txt") # pull the snp counts file and read through it
+snp_data <- readr::read_tsv("~/qbb2024-answers/qb24/week2/snp_counts.txt") # pull the snp counts file and read through it
 # log2 transform enrichment on the Y-axis
-snp_data$enrichment <- as.numeric(snp_data$enrichment)
-snp_data <- snp_data %>% mutate(log_enrichment = log2(enrichment)) 
+# snp_data$enrichment <- as.numeric(snp_data$enrichment)
+
+snp_data <- snp_data %>% mutate(log_enrichment = log2(Enrichment)) 
 
 # plot with ggplot
 ggplot() +
