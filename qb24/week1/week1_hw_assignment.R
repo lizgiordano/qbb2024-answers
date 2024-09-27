@@ -1,19 +1,20 @@
 library(tidyverse)
 library(ggplot2)
 
-# step 1.3
+# step 1.3 plot the histogram of coverage across the genome. Overlay the histogram with a Poisson distribution with lambda = 3. 
+# Also overlay the distribution with a Normal distribution with a mean of 3 and a std. dev. of 1.73 (which is the square root of 3).
 
 # 3x coverage
 # import data
 genome_coverage <- read.delim("~/qb24/week1/genome_coverage_3x.txt")
 
-# rename the coverage column in the data frame
+# rename the coverage column in the data frame to "coverage"
 colnames(genome_coverage) <- c("Coverage")
 
 # calculate frequencies of different coverages
 coverage_freq <- genome_coverage %>%
-  group_by(Coverage) %>%
-  summarize(frequency = n())
+  group_by(Coverage) %>% # Group the data by each coverage value
+  summarize(frequency = n()) # counts how many times that coverage value appears
 
 # coverage values for poisson and normal distribution calculations
 coverage_values <- coverage_freq$Coverage
@@ -24,6 +25,9 @@ poisson_pmf <- dpois(coverage_values, lambda =3)
 
 # calculate normal pdf
 normal_pdf <- dnorm(coverage_values, mean = 3, sd = sqrt(3))
+# dnorm() calculates the probability density function (PDF) of a normal distribution for coverage_values, 
+# mean of 3 and a standard deviation of sqrt 3
+
 
 # histogram plot of genome coverage with poisson distribution and normal distribution overlayed
 c3x_plot <- ggplot() +
