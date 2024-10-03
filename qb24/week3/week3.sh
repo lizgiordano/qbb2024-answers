@@ -40,7 +40,7 @@ READCOUNT=$((LINECOUNT / 4))    # Count the lines, divide by 4 for each read in 
 GENOMELENGTH=$(wc -m < sacCer3.fa) # full genome length, wc -m counts the number of characters
 COVERAGE=$(echo "${READCOUNT} * ${READLENGTH} / ${GENOMELENGTH}" | bc -l) # calculate coverage by readlength and readcount / genome length
 echo "Coverage: $COVERAGE" # print 
-# the expected average depth of coverage? 4X coverage
+# the expected average depth of coverage? 4.2X coverage
 
 # exercise 1.4 
 # Which sample has the largest file size? Which sample has the smallest file size?
@@ -67,5 +67,81 @@ less fastq_file_sizes.txt # see file sizes to compare
 FastQC *.fastq
 # median base quality along the read is 37
 # The base quality is the accuracy of each base in a sequencing read. It is a log function of Q=−10log(P). So the median base quality means that the median probability of an error is 10e-37
-# There is variation in the quality on the read at the end of the read. Which makes sense because that usually has occurred when I have doen sequencing in the past. My sequencing is always worse at the end. 
+# There is more variation in quality at the end of the read. Which makes sense because that usually has occurred when I have doen sequencing in the past. My sequencing is always worse at the end. 
+
+
+
+# Excercise 2
+
+# download and index sacCer3 genome
+wget https://hgdownload.cse.ucsc.edu/goldenPath/sacCer3/bigZips/sacCer3.fa.gz
+gunzip sacCer3.fa.gz
+# using bwa index, create an index for the sacCer3.fa reference
+bwa index sacCer3.fa
+
+less sacCer3.fa.amb
+# Question 2.1: How many chromosomes are in the yeast genome?
+## 17 chromosomes
+
+
+# follow Rajiv's code from class:
+# bwa index c_elegans.PRJNA13758.WS283.genomic.fa
+
+# for my_sample in *_1.subset.fastq.gz
+# do
+#     my_sample=`basename ${my_sample} _1.subset.fastq.gz`
+#     bwa mem c_elegans.PRJNA13758.WS283.genomic.fa ${my_sample}_1.subset.fastq.gz ${my_sample}_2.subset.fastq.gz > ${my_sample}.sam
+#     samtools sort -@ 4 -O bam -o ${my_sample}.bam ${my_sample}.sam
+#     samtools index ${my_sample}.bam
+# done
+
+
+
+
+# Question 2.2: How many total read alignments are recorded in the SAM file?
+
+TOTAL_READS=$(echo "$(wc -l < sacCer_A01_09.sam) - 20" | bc)
+# echo $TOTAL_READS
+## there are 669548 read alignments
+
+# Question 2.3: How many of the alignments are to loci on chromosome III?
+grep -w "III" sacCer_A01_09.sam | wc -l
+## 18196 alignments in chrom 3
+
+# Step 2.4: Format and index your alignments
+# use samtools, sort .sam files using samtools sort
+# create an index for each sorted .bam files using samtools index
+# should have 10 sorted .bam files and .bam.bai indices
+
+for MYSAMPLE in 09 11 23 24 27 31 35 39 62 63
+do
+    SAMPLE=A01_${MYSAMPLE}  
+    # loop generates filenames based on the list of numeric values (09, 11, 23, etc.). These filenames follow the pattern A01_<value>.fastq
+    bwa mem A01_${SAMPLE}.fastq > sacCer_${SAMPLE}.sam
+    # aligning sequencing reads against a reference genome. mem is algorithim in bwa for illumina seq alignment
+    # aligns the sequencing reads from the FASTQ file {SAMPLE}.fastq to the reference genome. 
+    samtools sort -@ 4 -O bam -o sacCer_A01_${SAMPLE}.bam sacCer_A01_${SAMPLE}.sam 
+    # samtools sort the SAM file into BAM format (binary version of SAM)
+    samtools index sacCer_A01_${SAMPLE}.bam
+    # creates an index for the BAM file
+done
+
+# Question 2.4: Does the depth of coverage appear to match that which you estimated in Step 1.3? Why or why not?
+# Yes it looks like the predicted 4X coverage
+
+# Question 2.5: Set your window to chrI:113113-113343 (paste that string in the search bar and click enter). 
+# How many SNPs do you observe in this window? 
+# 3
+# Are there any SNPs about which you are uncertain? Explain your answer.
+# chrI:113,326 because unlike the other 2 it's not covered by all the reads
+
+# Question 2.6: Set your window to chrIV:825548-825931. 
+# What is the position of the SNP in this window? 
+# chrIV:825,834
+# Does this SNP fall within a gene?
+# SCC2
+
+
+
+
 
