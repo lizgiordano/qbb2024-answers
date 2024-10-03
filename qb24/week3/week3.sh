@@ -45,3 +45,27 @@ echo "Coverage: $COVERAGE" # print
 # exercise 1.4 
 # Which sample has the largest file size? Which sample has the smallest file size?
 # use du? to check the file sizes
+
+du -m A01_{09,11,23,24,27,31,35,39,62,63}.fastq | awk '{print $1 " MB\t" $2}' > fastq_file_sizes.txt
+# du -m pulls sizes of the files within {}
+less fastq_file_sizes.txt # see file sizes to compare
+
+# A01_62 is the largest (150MB) and A01_27 is the smallest (110MB)
+
+# exercise 1.5
+# Run the program FastQC
+# FastQC A01_09.fastq
+# FastQC A01_11.fastq
+# FastQC A01_23.fastq
+# FastQC A01_24.fastq
+# FastQC A01_27.fastq
+# FastQC A01_31.fastq
+# FastQC A01_35.fastq
+# FastQC A01_39.fastq
+# FastQC A01_62.fastq
+# FastQC A01_63.fastq
+FastQC *.fastq
+# median base quality along the read is 37
+# The base quality is the accuracy of each base in a sequencing read. It is a log function of Q=−10log(P). So the median base quality means that the median probability of an error is 10e-37
+# There is variation in the quality on the read at the end of the read. Which makes sense because that usually has occurred when I have doen sequencing in the past. My sequencing is always worse at the end. 
+
