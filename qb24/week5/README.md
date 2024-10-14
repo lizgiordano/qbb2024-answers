@@ -15,4 +15,7 @@
 
 # exercise 3
 # step 3.3 What does the PCA plot suggest to you about the data? Why?
-## 
+## Fe replicate 1 and LFC-Fe replicate 3 may be switched.
+
+# step 3.6 Do the categories of enrichments make sense? Why?
+## Yes because there's a lot of metabolic and anabolic processes. Which makes sense for the gut. 
