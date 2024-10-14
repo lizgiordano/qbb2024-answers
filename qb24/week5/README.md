@@ -12,3 +12,7 @@
 ## 15 samples are above 45%
 # can you see the blocks of triplicates clearly? Try adjusting the min slider up. Does this suggest anything about consistency between replicates?
 ## Sliding the min slider up ceates more clustering. There triplicate blocks cluster closely together suggesting that there is high consistency between replicates. 
+
+# exercise 3
+# step 3.3 What does the PCA plot suggest to you about the data? Why?
+## 
