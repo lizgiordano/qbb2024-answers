@@ -9,9 +9,14 @@ import scipy
 # use python to simulate sequencing 3X coverage 
 # then input python code results into R to plot the coverage and analyze distribution
 # Q1.2 3X coverage
-# genome_size = 1000000
-# read_size = 100
-# coverage = 3
+
+## Look at the coverage varies across the genome by picking random positions and finding the coverage
+## then save the coverage to a text file that you can use to analyze the distribution in R
+
+# simulate sequencing 3x coverage of a 1Mbp genome with 100bp reads
+genome_size = 1000000
+read_size = 100
+coverage = 3
 
 # from the pseudocode
 # calculate number of reads needed to get the coverage you want for the genome
@@ -20,10 +25,14 @@ num_reads = int((genome_size * coverage)/read_size)
 #print(num_reads)
 # num_reads = 30000
 
+### need to create a text file of the coverage that is usable in R to do the statistical analysis
 
 genome_coverage = numpy.zeros(genome_size, int)
 # creates an array of genome_size with zeros, make each entry an integer 
 # track how many times each base pair has been sequenced
+
+# create a for loop to simulate random reads across the genome like in sequencing
+# pulling coverage at every position
 
 for _ in range(num_reads): # create a for loop to fine number of reads
      # selects a random start position and random integer so it doesn't go keep going past the end of the genome
@@ -60,20 +69,26 @@ for _ in range(num_reads): # create a for loop to fine number of reads
 # # step 1.5 10X coverage
 # repeat 3X coverage, change to 10X
 
+# simulate sequencing 10x coverage of a 1Mbp genome with 100bp reads
 genome_size = 1000000
 read_size = 100
 coverage = 10
 
+# again creating a text file that we can use in R
+
 # #pseudocode
 num_reads = int((genome_size * coverage)/read_size)
 
-# print(num_reads)
-# # num_reads = 30000
+#print(num_reads)
+num_reads = 30000
 
 # creates an array of genome_size with zeros, make each entry an integer 
 # track how many times each base pair has been sequenced
 
 genome_coverage = numpy.zeros(genome_size, int)
+
+# create a for loop to simulate random reads across the genome like in sequencing
+# pulling coverage at every position
 
 for _ in range(num_reads):
     start_pos = numpy.random.randint(0, genome_size - read_size + 1)
@@ -120,6 +135,9 @@ num_reads = int((genome_size * coverage)/read_size)
 
 genome_coverage = numpy.zeros(genome_size, int)
 
+# create a for loop to simulate random reads across the genome like in sequencing
+# pulling coverage at every position
+
 for _ in range(num_reads):
     start_pos = numpy.random.randint(0, genome_size - read_size + 1)
     end_pos = start_pos + read_size
@@ -143,31 +161,35 @@ normal_estimates = scipy.stats.norm.pdf(xs, numpy.mean(genome_coverage), numpy.s
 
 
 # step 2.1
-# reads = ['ATTCA', 'ATTGA', 'CATTG', 'CTTAT', 'GATTG', 'TATTT', 'TCATT', 'TCTTA', 'TGATT', 'TTATT', 'TTCAT', 'TTCTT', 'TTGAT']
+# generate your own de Bruijn graph using a provided set of reads
+# find the edges: overlap and the base on either side
+# build list of 3 nucleotide lengths (codon), counting by every 3 starting at the first letter i and going through. 
+# helps identify repetitive elements
+reads = ['ATTCA', 'ATTGA', 'CATTG', 'CTTAT', 'GATTG', 'TATTT', 'TCATT', 'TCTTA', 'TGATT', 'TTATT', 'TTCAT', 'TTCTT', 'TTGAT']
 
-# edges = {}
-# k = 3
-# for read in reads:
-#   for i in range(len(read) - k):  #go through each read, look at 1st 3 letter, see if next read matches, keep track of how many times a pairing shows up
-#      kmer1 = read[i: i+k] # kmer is fragment of length k
-#      kmer2 = read[i+1: i+1+k] 
-#      edges.setdefault((kmer1,kmer2), 0)
-#      edges[(kmer1,kmer2)] += 1
+edges = {}
+k = 3
+for read in reads:
+   for i in range(len(read) - k):  #go through each read, look at 1st 3 letter, see if next read matches, keep track of how many times a pairing shows up
+      kmer1 = read[i: i+k] # kmer is fragment of length k
+      kmer2 = read[i+1: i+1+k] 
+      edges.setdefault((kmer1,kmer2), 0)
+      edges[(kmer1,kmer2)] += 1
 
 
 # # Step 2.2 done in class
-
+# use above code to visualize de Bruijin graph
 # # step 2.3 print("digraph{")
 
-# for left, right in edges:
-#    print(f"{left}->{right}")
-# print("}")
+for left, right in edges:
+    print(f"{left}->{right}") 
+print("}")
 # # edge is overlap and the base on either side
 
     
 # # Step 2.2 done in class
 
-# # step 2.4 
+# question 2 answers in README
 
 
 
