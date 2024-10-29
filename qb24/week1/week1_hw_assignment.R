@@ -101,6 +101,8 @@ c3x_plot
 # then plot data to see how they fit with a poisson and normal distribution
 
 # import data
+# import 10X text file I made in python
+# now use R to see if 10x coverage fits normal and poisson distribution
 genome_coverage <- read.delim("~/qb24/week1/genome_coverage_10x.txt")
 
 # rename the coverage column in the data frame
@@ -155,6 +157,8 @@ c10x_plot
 # do all the same steps and logic
 
 # import data
+# now import the 30X coverage file
+# see if 30X coverage fits normal or poisson
 genome_coverage <- read.delim("~/qb24/week1/genome_coverage_30x.txt")
 
 # rename the coverage column in the data frame
@@ -176,6 +180,8 @@ poisson_pmf <- dpois(coverage_values, lambda =30)
 normal_pdf <- dnorm(coverage_values, mean = 30, sd = 5.47)
 
 # histogram plot of genome coverage with poisson distribution and normal distribution overlayed
+# can see if 30X coverage better fits the distributions
+
 c30x_plot <- ggplot() +
   geom_histogram(data = genome_coverage, 
                  mapping = aes(x = Coverage, fill = "Genome 10x Coverage"),
@@ -208,3 +214,6 @@ c30x_plot
 # In R we compared our data to theoretical models: normal and poisson distributions. 
 # by comparing to theoretical distribution models, we can see if things stick out about our sequencing data.
 # for example is there more variance or strange distributions that suggest something went wrong with the sequencing. 
+
+# question 2 done in python
+
