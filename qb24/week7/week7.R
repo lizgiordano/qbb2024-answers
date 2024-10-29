@@ -68,7 +68,7 @@ plotPCA(vsd, intgroup = "DTHHRDY") + labs(title = "PCA Analysis by Cause of Deat
 # What proportion of variance in the gene expression data is explained by each of the first two principal components? 
 # 7% and 48%
 # Which principal components appear to be associated with which subject-level variables? 
-# Age clusters with PC1
+# Cause of death clusters with PC1, suggesting it explains 48% of variance. Age clusters with PC2 (~7%).
 
 
 ## Exercise 2: Perform differential expression analysis
@@ -78,18 +78,33 @@ plotPCA(vsd, intgroup = "DTHHRDY") + labs(title = "PCA Analysis by Cause of Deat
 # get data in a format to allow to fit a linear model
 
 # extract the normalized expression data and bind to metadata
+
+#pull variance stabilized values, match the columns and rows of the metadata, convert to tibble
 vsd_df <- assay(vsd) %>%
   t() %>%
   as_tibble()
 vsd_df <- bind_cols(metadata_df, vsd_df)
 
+#test for differential expression of gene WASH7P by performing linear regression of WASHP7
+WASH7P <- lm(formula = WASH7P ~ DTHHRDY + AGE + SEX, data = vsd_df) %>%
+  summary() %>%
+  tidy()
+### question 2.1.1
+## 2.1.1: Does WASH7P show significant evidence of sex-differential expression (and if so, in which direction)? Explain your answer.
+# There's not much change in expression based on sex because the p value 2.792437e-01 is above 0.05
 
-m1 <- lm(formula = WASH7P ~ DTHHRDY + AGE + SEX, data = vsd_df) %>%
+
+# 2.1.2: Now repeat your analysis for the gene SLC25A47. 
+SLC25A47 <- lm(formula = SLC25A47 ~ DTHHRDY + AGE + SEX, data = vsd_df) %>%
   summary() %>%
   tidy()
 
-
-
+t_test <- t.test(SLC25A47 ~ SEX, data = vsd_df)
+t_test
+### question 2.1.2
+## Does this gene show evidence of sex-differential expression (and if so, in which direction)? Explain your answer.
+# There is significant changes in expression in SLC25A47 based on sex because the p value 2.569926e-02 is below 0.05. 
+# The gene is upregulated in males because the mean expression is greater in males (female=3.34, male=3.87)
 
 
 
