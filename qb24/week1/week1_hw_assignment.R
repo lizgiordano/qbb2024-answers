@@ -74,6 +74,8 @@ c3x_plot <- ggplot() +
        y = "Frequency") +
   scale_fill_manual(name = "Legend", values = c("Genome 3x Coverage" = "pink")) +
   # adds histogram to the legend
+  # compare normal and poisson on same plot
+  
   scale_color_manual(name = "Legend", values = c("Poisson Distribution" = "blue",
                                                  "Normal Distribution" = "green"))
 
@@ -93,6 +95,8 @@ c3x_plot
 
 
 # step 1.5
+# GOAL: compare 10x coverage to normal and poisson distribution
+
 # do all the same steps but switch to 10X coverage
 # have to change lambda to 10 and standard deviation
 # compare the data to poisson distribution with a coverage of 10
@@ -136,6 +140,7 @@ c10x_plot <- ggplot() +
                           color = "Poisson Distribution"), size = 1) +
   
   # add normal distribution as a line plot
+  # include plot features: title, colors, legend
   geom_line(data = coverage_freq, 
             mapping = aes(x = Coverage, y = normal_pdf*nrow(genome_coverage), 
                           color = "Normal Distribution"), size = 1) +
@@ -144,6 +149,7 @@ c10x_plot <- ggplot() +
        y = "Frequency") +
   scale_fill_manual(name = "Legend", values = c("Genome 10x Coverage" = "pink")) +
   # adds histogram to the legend
+  # compare normal and poisson on same plot
   scale_color_manual(name = "Legend", values = c("Poisson Distribution" = "blue",
                                                  "Normal Distribution" = "green"))
 ggsave(filename = "~/qb24/week1/ex1_10x_cov.png",
@@ -153,6 +159,8 @@ c10x_plot
 
 
 # Step 1.6 30X coverage
+# GOAL: compare 30x coverage to normal and poisson distribution
+
 ## repeat again but with 30X coverage 
 # do all the same steps and logic
 
@@ -187,11 +195,14 @@ c30x_plot <- ggplot() +
                  mapping = aes(x = Coverage, fill = "Genome 10x Coverage"),
                  binwidth = 1, color = "black", alpha = 0.5) +
   # add genome coverage as histogram
+  
   geom_line(data = coverage_freq, 
             mapping = aes(x = Coverage, y = poisson_pmf*nrow(genome_coverage), 
                           color = "Poisson Distribution"), size = 1) +
-  
+
+  # also want to fit to normal 
   # add normal distribution as a line plot
+  # include labelled legend and title
   geom_line(data = coverage_freq, 
             mapping = aes(x = Coverage, y = normal_pdf*nrow(genome_coverage), 
                           color = "Normal Distribution"), size = 1) +
@@ -200,6 +211,7 @@ c30x_plot <- ggplot() +
        y = "Frequency") +
   scale_fill_manual(name = "Legend", values = c("Genome 30x Coverage" = "pink")) +
   # adds histogram to the legend
+  # compare normal and poisson on same plot
   scale_color_manual(name = "Legend", values = c("Poisson Distribution" = "blue",
                                                  "Normal Distribution" = "green"))
 ggsave(filename = "~/qb24/week1/ex1_30x_cov.png",
