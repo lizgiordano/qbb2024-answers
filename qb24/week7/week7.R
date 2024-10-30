@@ -106,49 +106,82 @@ t_test
 # There is significant changes in expression in SLC25A47 based on sex because the p value 2.569926e-02 is below 0.05. 
 # The gene is upregulated in males because the mean expression is greater in males (female=3.34, male=3.87)
 
-
-
-
-# examine the distribution of expression for a given gene
-hist(vsd_df$FBgn0000008)
-
-# apply multiple linear regression to a given gene
-lm(data = vsd_df, formula = FBgn0000008 ~ condition + type) %>%
-  summary() %>%
-  tidy()
+# STEP 2.2.1
 
 # use DESeq2 to perform differential expression analysis across all genes
 dds <- DESeq(dds)
+
 # estimating dispersion and fitting model
 # if you only run results(dds) it assumes you only care about the last thing
 # need to specify what variable you want
 
-pasilla_res <- results(dds, name = "condition_untreated_vs_treated") %>%
-  as_tibble(rownames = "GENE_ID")
+# STEP 2.3
+# extract differential expression results for the variable SEX
+# padj is adjusted p values, used to find the genes that have the most differences in expression between male and female
+# need to convert to a tibble with gene names column
+sex_res <- results(dds, name = "SEX_male_vs_female")  %>%
+  as_tibble(rownames = "GENE_NAME")
 
-pasilla_res <- pasilla_res %>%
+sex_res <- sex_res %>%
   filter(!is.na(padj)) %>%
   arrange(padj)
 
-# if I wanted "untreated" to be the reference level
-dds$condition <- relevel(dds$condition, ref = "untreated")
+# Question 2.3.2 
+# How many genes exhibit significant differential expression between males and females at a 10% FDR?
+# 262 genes
 
-dds <- DESeq(dds)
+# STEP 2.3.3
+# load mappings of genes to chromosomes from dropbox download and merge to differential expression results
+gene_location= read.delim("gene_locations.txt")
+location = left_join(gene_loc,sex_res,by="GENE_NAME") %>% arrange(padj)
+# Which chromosomes encode the genes that are most strongly upregulated in males versus females, respectively? 
+# Are there more male-upregulated genes or female-upregulated genes near the top of the list? Interpret these results in your own words.
+# Genes on the Y chromosome are more strongly upregulated in males
+# Genes on the sex chromosomes have the most difference. 
+# Male-unregulated genes are near the top probably because they are found on the Y chromosome.
 
-pasilla_res <- results(dds, name = "condition_treated_vs_untreated") %>%
-  as_tibble(rownames = "GENE_ID")
+# question 2.3.4
+# Examine the results for the two genes (WASH7P and SLC25A47) that you had previously tested with the basic linear regression model in step 2.1. 
+# Are the results broadly consistent?
+# linear regression showed that WASH7P had no sex differences but SLC25A47 did. 
+# The differential expression results were consistent with that because SLC25A47 was in 10% FDR but WASH7P wasn't.
 
-pasilla_res <- pasilla_res %>%
+### STEP 2.4
+# differential expression by death classification
+# repeat step 2.2 with DTHHRDY
+
+DTHHRDY_res <- results(dds, name = "DTHHRDY_ventilator_case_vs_fast_death_of_natural_causes")  %>%
+  as_tibble(rownames = "GENE_NAME")
+
+DTHHRDY_res <- DTHHRDY_res %>%
   filter(!is.na(padj)) %>%
   arrange(padj)
 
-# create a volcano plot
+# How many genes are differentially expressed according to death classification at a 10% FDR?
+# 16069
 
-ggplot(data = pasilla_res, aes(x = log2FoldChange, y = -log10(pvalue))) +
-  geom_point(aes(color = (abs(log2FoldChange) > 2 & pvalue < 1e-20))) +
-  geom_text(data = pasilla_res %>% filter(abs(log2FoldChange) > 2 & pvalue < 1e-50),
-            aes(x = log2FoldChange, y = -log10(pvalue) + 5, label = GENE_ID), size = 3,) +
+# Question 2.4.2
+# Interpret this result in your own words. Given your previous analyses, does it make sense that there would be more genes differentially expressed based on type of death compared to the number of genes differentially expressed according to sex?
+# The PCA showed death classification attributed to 48% of the variance, so it matches with the differential expression results would show more differentially expressed genes than according to sex.
+
+
+# Exercise 3 Visualization
+
+# create a volcano plot of results from 2.3 
+# include significant data = 10% FDR
+# plot threshold lines at log2FoldChange> 1 and -log10(padj) > 1.
+
+ggplot(data = sex_res, aes(x = log2FoldChange, y = -log10(padj))) +
+  geom_point(aes(color = (abs(log2FoldChange) > 1 & -log10(padj)>1))) +
+  geom_text(data = sex_res %>% filter(abs(log2FoldChange) > 2 & -log10(padj) > 10),
+            aes(x = log2FoldChange, y = -log10(padj) + 5, label = GENE_NAME), size = 2,) +
   theme_bw() +
   theme(legend.position = "none") +
   scale_color_manual(values = c("darkgray", "coral")) +
-  labs(y = expression(-log[10]("p-value")), x = expression(log[2]("fold change")))
+  labs(title="Differential Expression by Sex") +
+  labs(y = expression(-log[10]("p-value")), x = expression(log[2]("fold change"))) +
+  geom_line(mapping = aes(1), linetype = "dashed", color = "red")+
+  geom_line(mapping = aes(-1), linetype = "dashed", color = "red") +
+  geom_line(mapping = aes(y=1), linetype = "dashed", color = "red")
+
+
