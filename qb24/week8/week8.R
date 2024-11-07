@@ -58,5 +58,21 @@ sort(genecounts, TRUE) # TRUE sets in descending order, use to find highest expr
 
 
 
+# Question 4a: Explore the total expression in each cell across all genes 
+# Create a vector named cellcounts using colSums()
+cellcounts = colSums(assay(gut))
+# Create a histogram of cellcounts using hist()
+hist(cellcounts)
+# What is the mean number of counts per cell?
+mean_counts <- mean(cellcounts)
+mean_counts
+  ## mean is 3622.082 counts per cell
+# How would you interpret the cells with much higher total counts (>10,000)?
+  ## you could look at the cell types with >10,000 expression. 
+  ## I would expect them to be in really active cell types like immune cells or metabolic cells
+  ## If they are in unexpected cells then there might have been a problem with the sample prep, amplification, or sequencing that gives incorrect extra counts in those cells
+
+
+
 
 
