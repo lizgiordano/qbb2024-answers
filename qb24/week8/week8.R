@@ -73,6 +73,37 @@ mean_counts
   ## If they are in unexpected cells then there might have been a problem with the sample prep, amplification, or sequencing that gives incorrect extra counts in those cells
 
 
+## Question 4b: Explore the number of genes detected in each cell
+# Create a vector named celldetected using colSums() but this time on assay(gut)>0
+celldetected = colSums(assay(gut)>0)
+# Create a histogram of celldetected using hist()
+hist(celldetected)
+# What is the mean number of genes detected per cell?
+mean_counts <- mean(celldetected)
+mean_counts
+  ## mean is 1059.392 genes detected per cell
+# What fraction of the total number of genes does this represent?
+  # total genes = 13407, 
+  # 1059/13407
+  # Represents about 7.9% of total number of genes 
 
 
+# explore mitochondrial reads
+mito = grep("^mt:",rownames(gut),value=TRUE)
+df = perCellQCMetrics(gut,subsets=list(Mito=mito))
+df = as.data.frame(df) 
+summary(df)
+# to confirm mean and detected match earlier answers
+colData(gut) <- cbind( colData(gut), df )
+
+# question 5
+# plot subsets mito percent vs broad annotation 
+plotColData(object = gut, y = "subsets_Mito_percent", x = "broad_annotation") + 
+  theme( axis.text.x=element_text( angle=90 ) ) +
+  labs(x= "broad annotation", y="subset_Mito_percent",
+      title = "Percentage of Mitochondrial Gene Expression by Cell Type")
+# Which cell types may have a higher percentage of mitochondrial reads? 
+  ## Metabolically active cells, immune cells, stem cells
+# Why might this be the case?
+  ## because these cells have high energy demands (and the mitochondria is the powerhouse of the cell :) )
 
