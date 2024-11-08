@@ -107,3 +107,51 @@ plotColData(object = gut, y = "subsets_Mito_percent", x = "broad_annotation") +
 # Why might this be the case?
   ## because these cells have high energy demands (and the mitochondria is the powerhouse of the cell :) )
 
+
+# question 6a epithelial cells
+coi = colData(gut)$broad_annotation == "epithelial cell"
+epi = gut[,coi]
+# now plot epi according to X_umap, color by annotation
+plotReducedDim(epi,"X_umap",color="annotation") + 
+  labs(title = "Epithelial Cells UMAP") 
+
+# ID marker genes in the anterior midgut
+marker.info = scoreMarkers( epi, colData(epi)$annotation )
+chosen <- marker.info[["enterocyte of anterior adult midgut epithelium"]]
+ordered <- chosen[order(chosen$mean.AUC, decreasing=TRUE),]
+head(ordered[,1:4])
+
+# what are the 6 top marker genes?
+  # Mal-A6, Men-b, vnd, betaTry, Mal-A1, Nhe2
+# what macromolecule does this region of the gut appear to specialize in metabolizing?
+  # sugars
+
+# plot expression of the top marker gene across cell types
+plotExpression(epi,c("Mal-A6"), x="annotation") + 
+  labs(x = "cell type", y="Expression",title = "Expression of Mal-A6") + 
+  theme(axis.text.x=element_text( angle=90 ) ) 
+
+
+# question 7
+# repeat for somatic precursors
+precursors = colData(gut)$broad_annotation == "somatic precursor cell"
+spc = gut[,precursors]
+spc.marker.info = scoreMarkers( spc, colData(spc)$annotation )
+chosen = spc.marker.info[["intestinal stem cell"]]
+ordered <- chosen[order(chosenSPCs$mean.AUC, decreasing=TRUE),]
+goi = rownames(ordered)[1:6]
+head(goi)
+
+plotExpression(spc,goi, x = "annotation")  + 
+  labs(x= "cell type", y="Expression", title = "Expression of Somatic Precursor Cell Markers") + 
+  theme( axis.text.x=element_text( angle=90 ) ) 
+
+# Which two cell types have more similar expression based on these markers?
+  # Intestinal Stem Cells and enteroblasts
+# Which marker looks most specific for intestinal stem cells?
+  # DI
+  
+
+
+
+
