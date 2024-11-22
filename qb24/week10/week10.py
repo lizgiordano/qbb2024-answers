@@ -198,7 +198,9 @@ def filter_by_size(labels, minsize, maxsize):
 # go through genes and fields, and use DAPI mask to get nuclei
 # then use the filter by size so pixels are grouped into nuclei
 # then loop through each labelled nuclei
-# change to PCNA
+# change to PCNA 
+# get ratio of nascent to pcna
+# save file with labelled tabs
 mean = [] 
 for gene in genes: 
     for field in fields: 
