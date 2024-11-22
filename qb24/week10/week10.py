@@ -1,85 +1,55 @@
-!/usr/bin/env python
+#!/usr/bin/env python
 
 
-import numpy
+import numpy as np
 import scipy
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt # Plotting package for python 
 import imageio
+import imageio.v3
+import plotly.express as px 
 import plotly
-import plotly.express as px
 
 # transform array dimension (axis) - to reshape array to make it more manageable
 na = np.newaxis # Numpy constant
 
-##** I used live-code and Chat GPT to get my code **
-
-
 # Exercise 1 Load images, use a for loop for going through each dimension
+# load images into memory, process them, and store them in a dictionary.
+# Read image files based on gene names, field , and channels, normalizes the image data, and stores as NumPy arrays.
 
 # creating a dictionary to make it easier to group the 3 dimensions: gene name, field, channel color
 images = {}
-
-# now name the dimensions/variables from the file name that I want for the for loop 
-names = ["APEX1", "PIM2", "POLR2B", "SRSF1"]
+image_dir = "/Users/cmdb/qbb2024-answers/qb24/week10/"
+genes = ["APEX1", "PIM2", "POLR2B", "SRSF1"]
 fields = ["field0", "field1"]
 channels = ["DAPI", "PCNA", "nascentRNA"]
-
-# make a for loop that goes through the name, field, and channel
-for gene in genes: # take the gene name from the file
-    images[gene] = {} # store it
-    for field in fields:
-        images[gene][field] = {}  
-        for channel in channels:
-            # put them together for the filename
-            filepath = f"~/qbb2024-answers/qb24/week10/{gene}_{field}_{channel}"
-            try:
-                img = imageio.v3.imread(filepath).astype(np.uint16) # Read the image and store it in the dictionary
-                images[f"{gene}_{field}_{channel}"] = img
-            except FileNotFoundError:
-                # exclude missing files 
-                images[gene][field][channel] = None
-                #print(f"File not found: {filename}")
-
-# need another for loop to make a list of 3D image arrays
-all_img_arrays = [] # makes list
-
-# Loop through genes, fields, channels
-for gene in genes:
-    for field in fields:
-        # make array to store channels
-        img_array = np.zeros((test_img.shape[0], test_img.shape[1], 3), np.uint16)
+# for loop to go through each genename, field, and channel
+for gene in genes:  # loops through each gene
+    for field in fields:  # for each gene, loops through field 
+        image = np.zeros((520, 616, 3), np.uint16)  # create array with those dimensions
         for i, channel in enumerate(channels):
+            image_name = image_dir + gene + '_' + field + '_' + channel + '.tif'
             try:
-                # Retrieve image
-                img = images[f"{gene}_{field}_{channel}"]
-                if img is None:
-                    raise KeyError(f"Image missing: {gene}_{field}_{channel}")
-                # process and store in array
-                temp = img.astype(np.float32)
-                temp -= np.amin(temp)
-                temp /= np.amax(temp)
-                img_array[:, :, i] = (temp * 65535).astype(np.uint16)  
-            except KeyError as e:
-                # print(e)
-        # add the new processed array to the list
-        all_img_arrays.append(img_array)
-
-# Convert to NumPy array
-all_img_arrays = np.array(all_img_arrays)
+                image[:, :, i] = imageio.v3.imread(image_name)
+            except FileNotFoundError:
+                print(f"Warning: File {image_name} not found.")
+                continue
+        image = image.astype(np.float32)  # resize
+        for i in range(3):
+            image[:, :, i] -= np.amin(image[:, :, i])
+            image[:, :, i] /= np.amax(image[:, :, i])
+        # Rescale and clip values between 0 and 255
+        image = np.clip(image * 255, 0, 255).astype(np.uint8)
+        images[f"{gene}_{field}"] = image
+    
 
 # exercise 2
 # Step 2.1 For each image, create a binary mask from the DAPI channel
 
 # mask differentiates between nucleus and cytoplasm
 # gotta find nucleus by DAPI
+dapi_mean = np.mean(image[:, :, 0]) 
+mask = image[:, :, 0] >= dapi_mean
 
-
-mask = []
-for img in all_img_arrays:
-    DAPI_channel = img[:, :, 0]
-    DAPI_mean = np.mean(DAPI_channel)
-    DAPI_mask = DAPI_channel >= DAPI_mean
-    binary_mask.append(DAPI_mask)
 
 
 # step 2.2
@@ -204,7 +174,7 @@ def filter_by_size(labels, minsize, maxsize):
 mean = [] 
 for gene in genes: 
     for field in fields: 
-        image = images[f"{gene}_{field}"] =
+        image = images[f"{gene}_{field}"] 
         dapi_mask = mask  
         labels = find_labels(dapi_mask)  
         labels = filter_by_size(labels, minsize=100, maxsize=10000)  
