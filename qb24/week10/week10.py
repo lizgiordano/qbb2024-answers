@@ -222,7 +222,7 @@ for gene in genes:
                 ratios.append(0)  
         for mnRNA, mPCNA, ratio in zip(mean_nascentRNA, mean_pcna, ratios): 
             mean.append([gene, mnRNA, mPCNA, ratio]) 
-output_filename = "mean_mucleus_signal.csv" 
+output_filename = "mean_mucleus_signal.txt" 
 with open(output_filename, 'w') as file:
     file.write("Gene\tNascentRNA\PCNA\tRatio\n") 
     for mean in means: 
